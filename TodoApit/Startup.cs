@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TodoApit.Db;
 
 namespace TodoApit
 {
@@ -17,6 +19,8 @@ namespace TodoApit
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase(Configuration["DBNAME"]));
+
             services.AddControllers();
         }
 
