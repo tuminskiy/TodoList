@@ -1,10 +1,10 @@
-﻿namespace TodoApit.Models
+﻿namespace TodoApit.Db.Models
 {
     public enum TodoPriority
     {
         None = 0,
         Low,
-        Middle,
+        Medium,
         High
     }
 
@@ -12,7 +12,7 @@
     {
         public int Id { get; set; }
 
-        public TodoPriority Priority { get; set; }
+        public TodoPriority Priority { get; set; } = TodoPriority.None;
 
         public string Case { get; set; }
     }

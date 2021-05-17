@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TodoApit.Models;
+using TodoApit.Db.Models;
 
 namespace TodoApit.Db
 {
