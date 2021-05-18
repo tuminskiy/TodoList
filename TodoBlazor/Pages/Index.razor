@@ -1,7 +1,65 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@inject TodoBlazor.Models.TodoService _todoService
 
-Welcome to your new app.
+<div>
+    <h1 class="text-center">Todo list</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    @if (Todos is null)
+    {
+        <h2 class="text-center">Loading . . .</h2>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <ul>
+                    @foreach (var todo in Todos)
+                    {
+                        <li>
+                            <a href="javascript::void(0)" @onclick="() => SelectTodo(todo.Id)">
+                                <p>Priority: @todo.Priority</p>
+                                <p>Case: @todo.Case</p>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <EditForm Model="@Todo" OnValidSubmit="HandleSubmit">
+            <div class="card">
+                <div class="card-body">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    Priority:
+                    <InputSelect class="form-control" @bind-Value="Todo.Priority">
+                        @foreach (var priority in Enum.GetValues(typeof(TodoPriority)))
+                                {
+                            <option value="@priority">@priority</option>
+                                }
+                    </InputSelect>
+
+                    Case:
+                    <InputText class="form-control" @bind-Value="Todo.Case" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary">
+                @if (IsEditMode)
+                {
+                <span>Update</span>
+                }
+                else
+                {
+                <span>Add</span>
+                }
+            </button>
+
+            @if (IsEditMode)
+            {
+                <button type="button" class="btn btn-outline-primary" @onclick="(() => IsEditMode = false)">Cancel</button>
+            }
+        </EditForm>
+    }
+</div>

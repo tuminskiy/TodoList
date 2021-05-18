@@ -63,6 +63,7 @@ namespace TodoApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<TodoApiHub>("/TodoApiHub");
             });
         }
     }

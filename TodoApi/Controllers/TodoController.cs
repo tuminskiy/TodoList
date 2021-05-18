@@ -43,7 +43,7 @@ namespace TodoApi.Controllers
             
             if (_dbContext.SaveChanges() > 0)
             {
-                _hubContext.Clients.All.SendAsync("NotifyTodoAdded", todoUpdate);
+                _hubContext.Clients.All.SendAsync("NotifyTodosChange", todoUpdate);
             }
 
             return Ok();
@@ -57,9 +57,14 @@ namespace TodoApi.Controllers
             todo.Id = newId;
 
             _dbContext.Todos.Add(todo);
-            _dbContext.SaveChanges();
+            
+            if (_dbContext.SaveChanges() > 0)
+            {
+                _hubContext.Clients.All.SendAsync("NotifyTodosChange", todo);
+            }
 
             return Ok();
         }
+
     }
 }
