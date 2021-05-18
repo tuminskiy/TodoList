@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TodoApit.Db;
+using System;
+using System.Linq;
+using TodoApi.Db;
 
-namespace TodoApit
+namespace TodoApi
 {
     public class Startup
     {
@@ -19,7 +22,25 @@ namespace TodoApit
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<TodoDbContext>(opt => opt.UseInMemoryDatabase(Configuration["DBNAME"]));
+            services.AddInMemoryDatabase(Configuration["DbName"]);
+
+            services.AddCors( options =>
+                options.AddPolicy(Configuration["CorsPolicy"], builder =>
+                {
+                    builder.AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowAnyOrigin();
+                })
+            );
+
+            services.AddSignalR();
+
+            services.AddResponseCompression( options =>
+            {
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" }
+                );
+            });
 
             services.AddControllers();
         }
@@ -31,11 +52,13 @@ namespace TodoApit
                 app.UseDeveloperExceptionPage();
             }
 
+            app.InitializeSeededData();
+
+            app.UseCors(Configuration["CorsPolicy"]);
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

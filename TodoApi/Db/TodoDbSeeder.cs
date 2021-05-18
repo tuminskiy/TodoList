@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using TodoApit.Db.Models;
+using TodoApi.Db.Models;
 
-namespace TodoApit.Db
+namespace TodoApi.Db
 {
     public class TodoDbSeeder
     {

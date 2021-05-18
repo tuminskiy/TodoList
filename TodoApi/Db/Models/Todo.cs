@@ -1,4 +1,6 @@
-﻿namespace TodoApit.Db.Models
+﻿using System;
+
+namespace TodoApi.Db.Models
 {
     public enum TodoPriority
     {
