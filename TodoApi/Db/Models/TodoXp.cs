@@ -4,7 +4,6 @@ using System.Runtime.Serialization;
 
 namespace TodoApi.Db.Models
 {
-    [Serializable]
     public class TodoXp : XPObject
     {
         public TodoXp(Session session)

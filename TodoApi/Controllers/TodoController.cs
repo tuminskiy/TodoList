@@ -1,7 +1,5 @@
-﻿using DevExpress.Xpo;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System.Linq;
 using TodoApi.Db;
 using TodoApi.Db.Models;
 
@@ -22,7 +20,7 @@ namespace TodoApi.Controllers
 
         [HttpGet]
         public IActionResult GetTodos()
-        {       
+        {
             return Ok(_todoDbService.Todos());
         }
 

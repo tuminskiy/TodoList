@@ -8,7 +8,9 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using TodoApi.Db;
 using TodoApi.Db.Models;
-
+using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+//using Microsoft.AspNetCore.Mvc
 
 namespace TodoApi
 {
@@ -23,7 +25,13 @@ namespace TodoApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(opt =>
+                    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve
+                );
+            //.AddNewtonsoftJson(options =>
+            //  options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            //    );
 
             services.AddXpoDefaultUnitOfWork(true, options => options
                 .UseConnectionString(
