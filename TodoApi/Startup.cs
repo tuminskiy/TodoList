@@ -1,13 +1,14 @@
+using DevExpress.Xpo.DB;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Linq;
 using TodoApi.Db;
+using TodoApi.Db.Models;
+
 
 namespace TodoApi
 {
@@ -22,7 +23,19 @@ namespace TodoApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInMemoryDatabase(Configuration["DbName"]);
+            services.AddControllers();
+
+            services.AddXpoDefaultUnitOfWork(true, options => options
+                .UseConnectionString(
+                    MSSqlConnectionProvider.GetConnectionString(
+                        Configuration["DbServer"], Configuration["DbName"]
+                    )
+                )
+                .UseAutoCreationOption(AutoCreateOption.None)
+                .UseEntityTypes(typeof(TodoXp))
+            );
+
+            services.AddScoped<TodoDbService>();
 
             services.AddCors( options =>
                 options.AddPolicy(Configuration["CorsPolicy"], builder =>
@@ -42,7 +55,7 @@ namespace TodoApi
                 );
             });
 
-            services.AddControllers();
+            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,8 +64,6 @@ namespace TodoApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.InitializeSeededData();
 
             app.UseCors(Configuration["CorsPolicy"]);
 

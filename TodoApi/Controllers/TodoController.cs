@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DevExpress.Xpo;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using TodoApi.Db;
 using TodoApi.Db.Models;
 
@@ -11,40 +11,28 @@ namespace TodoApi.Controllers
     [ApiController]
     public class TodoController : ControllerBase
     {
-        private readonly TodoDbContext _dbContext;
-        private readonly IHubContext<TodoApiHub> _hubContext;
+        private TodoDbService _todoDbService;
+        private IHubContext<TodoApiHub> _hubContext;
 
-        public TodoController(TodoDbContext dbContext, IHubContext<TodoApiHub> hubContext)
+        public TodoController(TodoDbService todoDbService, IHubContext<TodoApiHub> hubContext)
         {
-            _dbContext = dbContext;
+            _todoDbService = todoDbService;
             _hubContext = hubContext;
         }
 
         [HttpGet]
         public IActionResult GetTodos()
-        {
-            return Ok(_dbContext.Todos);
+        {       
+            return Ok(_todoDbService.Todos());
         }
 
         [HttpPut]
         public IActionResult UpdateTodo([FromBody] Todo todo)
         {
-            var todoUpdate = _dbContext.Todos.Find(todo.Id);
-
-            if (todoUpdate is null)
+            if (_todoDbService.UpdateTodo(todo))
             {
-                return NotFound();
-            }
-
-            todoUpdate.Priority = todo.Priority;
-            todoUpdate.Case = todo.Case;
-
-            _dbContext.Todos.Update(todoUpdate);
-            
-            if (_dbContext.SaveChanges() > 0)
-            {
-                _hubContext.Clients.All.SendAsync("NotifyTodosChange", todoUpdate);
-            }
+                _hubContext.Clients.All.SendAsync("NotifyTodosChange", todo);
+            }            
 
             return Ok();
         }
@@ -52,16 +40,9 @@ namespace TodoApi.Controllers
         [HttpPost]
         public IActionResult AddTodo([FromBody] Todo todo)
         {
-            var newId = _dbContext.Todos.Select(o => o.Id).Max() + 1;
-
-            todo.Id = newId;
-
-            _dbContext.Todos.Add(todo);
+            _todoDbService.AddTodo(todo);
             
-            if (_dbContext.SaveChanges() > 0)
-            {
-                _hubContext.Clients.All.SendAsync("NotifyTodosChange", todo);
-            }
+            _hubContext.Clients.All.SendAsync("NotifyTodosChange", todo);
 
             return Ok();
         }

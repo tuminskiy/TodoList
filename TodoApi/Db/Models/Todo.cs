@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TodoApi.Db.Models
+﻿namespace TodoApi.Db.Models
 {
     public enum TodoPriority
     {
@@ -14,8 +12,10 @@ namespace TodoApi.Db.Models
     {
         public int Id { get; set; }
 
-        public TodoPriority Priority { get; set; } = TodoPriority.None;
+        public TodoPriority Priority { get; set; }
 
         public string Case { get; set; }
     }
+
+    
 }
